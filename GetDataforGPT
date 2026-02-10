@@ -1,0 +1,58 @@
+
+// Description:
+// This statement generates a combined table listing all visible columns 
+// (from all visible tables) and all DAX measures in the model.
+// 
+// Output Columns:
+// - Typ  : ("Column" or "DAX Measure")
+// - Table: Table name (or "not specified" for measures)
+// - Name : Name of the column or measure
+//
+// Purpose:
+// Useful for documentation, validation, metadata analysis, 
+// or preparing a model overview for AI/automation workflows.
+// Scriped by Michael Tenner
+//----------------------------------------------
+EVALUATE
+//----------------------------------------------
+// Prepare Table Info
+//----------------------------------------------
+VAR _Tables = 
+    SELECTCOLUMNS(
+        INFO.TABLES(),
+        "Name", [Name],
+        "TableID", [ID]
+    )
+//----------------------------------------------
+// Prepare Measures Info
+//----------------------------------------------
+VAR _Measures = 
+    SELECTCOLUMNS(
+        INFO.MEASURES(),
+        "Typ", "DAX Measure",
+        "Table", "not specified",
+        "Name", [Name]
+    )
+//----------------------------------------------
+// Prepare Columns Info
+//----------------------------------------------
+VAR _Columns = 
+    SELECTCOLUMNS(
+        NATURALINNERJOIN(
+            FILTER(INFO.COLUMNS(), [IsHidden] = FALSE()),
+            _Tables
+        ),
+        "Typ", "Column",
+        "Table", [Name],
+        "Name", [ExplicitName]
+    )
+//----------------------------------------------
+// Combine Measures and Columns
+//----------------------------------------------
+VAR _AI_Ready_Table = 
+    UNION(
+        _Measures,
+        _Columns
+    )
+RETURN
+    _AI_Ready_Table
