@@ -351,6 +351,7 @@ createOrReplace
 			summarizeBy: none
 			isNameInferred
 			sourceColumn: [Month Name Fiscal]
+			sortByColumn: 'Fiscal Month'
 
 			annotation SummarizationSetBy = Automatic
 
@@ -453,4 +454,3 @@ createOrReplace
 					)
 					```
 
-	
